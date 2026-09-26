@@ -10,7 +10,6 @@ function ProductCard({ product }) {
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition duration-300">
 
-      {/* Product Image */}
       <div className="aspect-square bg-gray-100 overflow-hidden">
         <img
           src={product.image}
@@ -19,7 +18,6 @@ function ProductCard({ product }) {
         />
       </div>
 
-      {/* Product Info */}
       <div className="p-5">
 
         <p className="text-sm text-gray-500 mb-1">

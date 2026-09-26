@@ -91,7 +91,6 @@ function Navbar({
 
         <div className="h-20 flex items-center justify-between gap-4">
 
-          {/* LOGO */}
 
           <Link
             to="/"
@@ -107,7 +106,6 @@ function Navbar({
 
           <div className="hidden lg:flex items-center gap-7">
 
-            {/* HOME */}
 
             <Link
               to="/"
@@ -116,7 +114,6 @@ function Navbar({
               Home
             </Link>
 
-            {/* SHOP */}
 
             <Link
               to="/#shop"
@@ -129,7 +126,6 @@ function Navbar({
               Shop
             </Link>
 
-            {/* CATEGORIES */}
 
             <button
               type="button"
@@ -139,7 +135,6 @@ function Navbar({
               Categories
             </button>
 
-            {/* NEW ARRIVALS */}
 
             <button
               type="button"
@@ -149,7 +144,6 @@ function Navbar({
               New Arrivals
             </button>
 
-            {/* MY ORDERS */}
 
             <Link
               to="/orders"
@@ -166,7 +160,6 @@ function Navbar({
 
           <div className="flex items-center gap-2 sm:gap-4">
 
-            {/* SEARCH */}
 
             <form
               onSubmit={handleSearch}
@@ -192,7 +185,6 @@ function Navbar({
               </div>
             </form>
 
-            {/* CART */}
 
             <Link
               to="/cart"
@@ -231,7 +223,6 @@ function Navbar({
 
             )}
 
-            {/* MOBILE MENU BUTTON */}
 
             <button
               onClick={() => setMobileMenu(!mobileMenu)}
@@ -258,7 +249,6 @@ function Navbar({
 
             <div className="flex flex-col gap-4">
 
-              {/* HOME */}
 
               <Link
                 to="/"
@@ -268,7 +258,6 @@ function Navbar({
                 Home
               </Link>
 
-              {/* SHOP */}
 
               <Link
                 to="/#shop"
@@ -281,7 +270,6 @@ function Navbar({
                 Shop
               </Link>
 
-              {/* CATEGORIES */}
 
               <button
                 type="button"
@@ -293,7 +281,6 @@ function Navbar({
                 Categories
               </button>
 
-              {/* NEW ARRIVALS */}
 
               <button
                 type="button"
@@ -305,7 +292,6 @@ function Navbar({
                 New Arrivals
               </button>
 
-              {/* MY ORDERS */}
 
               <Link
                 to="/orders"
@@ -315,7 +301,6 @@ function Navbar({
                 My Orders
               </Link>
 
-              {/* MOBILE SEARCH */}
 
               <form
                 onSubmit={handleSearch}

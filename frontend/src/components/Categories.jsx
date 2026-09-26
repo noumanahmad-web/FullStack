@@ -29,7 +29,6 @@ function Categories() {
       id="categories"
       className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 scroll-mt-20"
     >
-      {/* Header */}
       <div className="text-center mb-12">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
           Shop By Category
@@ -44,7 +43,6 @@ function Categories() {
         </p>
       </div>
 
-      {/* Categories */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {categories.map((category) => (
           <Link
@@ -52,17 +50,14 @@ function Categories() {
             to={`/shop?category=${encodeURIComponent(category.name)}`}
             className="group relative h-72 overflow-hidden rounded-3xl bg-gray-200 shadow-sm hover:shadow-xl transition-all duration-300"
           >
-            {/* Image */}
             <img
               src={category.image}
               alt={category.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
 
-            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-            {/* Content */}
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <h3 className="text-2xl font-bold text-white">
                 {category.name}
