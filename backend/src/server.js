@@ -15,10 +15,14 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      process.env.FRONTEND_URL,
+    ],
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -40,11 +44,13 @@ app.use("/api/products", productRoutes);
 
 // Order Routes
 app.use("/api/orders", orderRoutes);
+
 // Admin Routes
 app.use("/api/admin", adminRoutes);
+
 // Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
