@@ -34,6 +34,7 @@ function AdminProducts() {
     image: "",
     category: "",
     stock: "",
+    attributes: [],
   });
 
   // =========================
@@ -45,8 +46,13 @@ function AdminProducts() {
   const [success, setSuccess] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // =========================
   // Backend URL
-  const API_URL = "http://localhost:5000/api/products";
+  // =========================
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  const PRODUCTS_API_URL = `${API_URL}/products`;
 
   // =========================
   // Get Admin Token
@@ -63,19 +69,23 @@ function AdminProducts() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(API_URL);
+      const response = await fetch(PRODUCTS_API_URL);
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Products load nahi ho sake.");
+        throw new Error(
+          data.message || "Products load nahi ho sake."
+        );
       }
 
       setProducts(data.products || []);
     } catch (error) {
       console.error("Products fetch error:", error);
+
       setError(
-        error.message || "Products load nahi ho sake. Backend check karein."
+        error.message ||
+          "Products load nahi ho sake. Backend check karein."
       );
     } finally {
       setLoading(false);
@@ -102,6 +112,113 @@ function AdminProducts() {
   };
 
   // =========================
+  // Add New Option
+  // =========================
+  const addOption = () => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: [
+        ...prev.attributes,
+        {
+          name: "",
+          values: [""],
+        },
+      ],
+    }));
+  };
+
+  // =========================
+  // Remove Option
+  // =========================
+  const removeOption = (optionIndex) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.filter(
+        (_, index) => index !== optionIndex
+      ),
+    }));
+  };
+
+  // =========================
+  // Change Option Name
+  // =========================
+  const handleOptionNameChange = (optionIndex, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((option, index) =>
+        index === optionIndex
+          ? {
+              ...option,
+              name: value,
+            }
+          : option
+      ),
+    }));
+  };
+
+  // =========================
+  // Add Value
+  // =========================
+  const addValue = (optionIndex) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((option, index) =>
+        index === optionIndex
+          ? {
+              ...option,
+              values: [...option.values, ""],
+            }
+          : option
+      ),
+    }));
+  };
+
+  // =========================
+  // Remove Value
+  // =========================
+  const removeValue = (optionIndex, valueIndex) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((option, index) => {
+        if (index !== optionIndex) return option;
+
+        return {
+          ...option,
+          values: option.values.filter(
+            (_, index) => index !== valueIndex
+          ),
+        };
+      }),
+    }));
+  };
+
+  // =========================
+  // Change Value
+  // =========================
+  const handleValueChange = (
+    optionIndex,
+    valueIndex,
+    value
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((option, index) => {
+        if (index !== optionIndex) return option;
+
+        return {
+          ...option,
+          values: option.values.map(
+            (currentValue, currentIndex) =>
+              currentIndex === valueIndex
+                ? value
+                : currentValue
+          ),
+        };
+      }),
+    }));
+  };
+
+  // =========================
   // Open Add Modal
   // =========================
   const handleAddProduct = () => {
@@ -114,6 +231,7 @@ function AdminProducts() {
       image: "",
       category: "",
       stock: "",
+      attributes: [],
     });
 
     setError("");
@@ -127,6 +245,17 @@ function AdminProducts() {
   const handleEditProduct = (product) => {
     setEditingProduct(product);
 
+    const existingAttributes = Array.isArray(
+      product.attributes
+    )
+      ? product.attributes.map((attribute) => ({
+          name: attribute.name || "",
+          values: Array.isArray(attribute.values)
+            ? attribute.values
+            : [],
+        }))
+      : [];
+
     setFormData({
       name: product.name || "",
       description: product.description || "",
@@ -134,6 +263,7 @@ function AdminProducts() {
       image: product.image || "",
       category: product.category || "",
       stock: product.stock ?? "",
+      attributes: existingAttributes,
     });
 
     setError("");
@@ -157,6 +287,7 @@ function AdminProducts() {
       image: "",
       category: "",
       stock: "",
+      attributes: [],
     });
 
     setError("");
@@ -171,7 +302,9 @@ function AdminProducts() {
     setError("");
     setSuccess("");
 
-    // Basic validation
+    // =========================
+    // Basic Validation
+    // =========================
     if (
       !formData.name.trim() ||
       !formData.description.trim() ||
@@ -194,6 +327,41 @@ function AdminProducts() {
       return;
     }
 
+    // =========================
+    // Clean + Validate Attributes
+    // =========================
+    const cleanedAttributes = formData.attributes
+      .map((attribute) => ({
+        name: attribute.name.trim(),
+        values: attribute.values
+          .map((value) => value.trim())
+          .filter(Boolean),
+      }))
+      .filter(
+        (attribute) =>
+          attribute.name && attribute.values.length > 0
+      );
+
+    // If admin added an option but left it incomplete
+    const hasInvalidAttribute = formData.attributes.some(
+      (attribute) => {
+        const optionName = attribute.name.trim();
+
+        const hasEmptyValue = attribute.values.some(
+          (value) => !value.trim()
+        );
+
+        return !optionName || hasEmptyValue;
+      }
+    );
+
+    if (hasInvalidAttribute) {
+      setError(
+        "Please complete all attribute option names and values, or remove the empty option/value."
+      );
+      return;
+    }
+
     try {
       setSubmitting(true);
 
@@ -206,6 +374,7 @@ function AdminProducts() {
         image: formData.image.trim(),
         category: formData.category.trim(),
         stock: Number(formData.stock),
+        attributes: cleanedAttributes,
       };
 
       // =========================
@@ -213,7 +382,7 @@ function AdminProducts() {
       // =========================
       if (editingProduct) {
         const response = await fetch(
-          `${API_URL}/${editingProduct._id}`,
+          `${PRODUCTS_API_URL}/${editingProduct._id}`,
           {
             method: "PUT",
             headers: {
@@ -248,7 +417,7 @@ function AdminProducts() {
       // ADD PRODUCT
       // =========================
       else {
-        const response = await fetch(API_URL, {
+        const response = await fetch(PRODUCTS_API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -280,6 +449,7 @@ function AdminProducts() {
           image: "",
           category: "",
           stock: "",
+          attributes: [],
         });
 
         await fetchProducts();
@@ -312,16 +482,19 @@ function AdminProducts() {
 
       const token = getToken();
 
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-        headers: {
-          ...(token
-            ? {
-                Authorization: `Bearer ${token}`,
-              }
-            : {}),
-        },
-      });
+      const response = await fetch(
+        `${PRODUCTS_API_URL}/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            ...(token
+              ? {
+                  Authorization: `Bearer ${token}`,
+                }
+              : {}),
+          },
+        }
+      );
 
       const data = await response.json();
 
@@ -352,9 +525,15 @@ function AdminProducts() {
     const search = searchTerm.toLowerCase();
 
     return (
-      product.name?.toLowerCase().includes(search) ||
-      product.category?.toLowerCase().includes(search) ||
-      product.description?.toLowerCase().includes(search)
+      product.name
+        ?.toLowerCase()
+        .includes(search) ||
+      product.category
+        ?.toLowerCase()
+        .includes(search) ||
+      product.description
+        ?.toLowerCase()
+        .includes(search)
     );
   });
 
@@ -371,15 +550,15 @@ function AdminProducts() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">
+            <p className="mb-1 text-sm font-medium text-gray-500">
               Admin Panel
             </p>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
               Products
             </h1>
 
-            <p className="text-gray-500 mt-2">
+            <p className="mt-2 text-gray-500">
               Manage your store products
             </p>
           </div>
@@ -454,7 +633,9 @@ function AdminProducts() {
             type="text"
             placeholder="Search products..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) =>
+              setSearchTerm(e.target.value)
+            }
             className="w-full rounded-xl border border-gray-200 bg-white py-3.5 pl-11 pr-4 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
           />
         </div>
@@ -462,7 +643,10 @@ function AdminProducts() {
         {/* Product Count */}
         <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-5 py-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-            <Package size={20} className="text-gray-700" />
+            <Package
+              size={20}
+              className="text-gray-700"
+            />
           </div>
 
           <div>
@@ -483,7 +667,6 @@ function AdminProducts() {
       ========================= */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
 
-        {/* Desktop Table */}
         <div className="overflow-x-auto">
 
           <table className="min-w-[850px] w-full">
@@ -539,7 +722,6 @@ function AdminProducts() {
                 </tr>
               ) : filteredProducts.length > 0 ? (
 
-                /* Products */
                 filteredProducts.map((product) => (
                   <tr
                     key={product._id}
@@ -575,6 +757,7 @@ function AdminProducts() {
                         </div>
 
                         <div className="min-w-0">
+
                           <p className="truncate font-semibold text-gray-900">
                             {product.name}
                           </p>
@@ -582,6 +765,7 @@ function AdminProducts() {
                           <p className="mt-1 max-w-xs truncate text-sm text-gray-500">
                             {product.description}
                           </p>
+
                         </div>
 
                       </div>
@@ -591,7 +775,10 @@ function AdminProducts() {
                     {/* Price */}
                     <td className="px-6 py-5">
                       <span className="font-semibold text-gray-900">
-                        Rs. {Number(product.price).toLocaleString()}
+                        Rs.{" "}
+                        {Number(
+                          product.price
+                        ).toLocaleString()}
                       </span>
                     </td>
 
@@ -636,9 +823,13 @@ function AdminProducts() {
                         <button
                           type="button"
                           onClick={() =>
-                            handleDeleteProduct(product._id)
+                            handleDeleteProduct(
+                              product._id
+                            )
                           }
-                          disabled={deletingId === product._id}
+                          disabled={
+                            deletingId === product._id
+                          }
                           className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           {deletingId === product._id ? (
@@ -662,7 +853,6 @@ function AdminProducts() {
 
               ) : (
 
-                /* Empty */
                 <tr>
                   <td
                     colSpan="5"
@@ -856,7 +1046,7 @@ function AdminProducts() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  placeholder="e.g. Men, Women, Shoes"
+                  placeholder="e.g. Perfume, Jackets, Clothes"
                   className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
                 />
               </div>
@@ -885,12 +1075,177 @@ function AdminProducts() {
                       alt="Product preview"
                       className="h-40 w-full object-cover"
                       onError={(e) => {
-                        e.currentTarget.style.display = "none";
+                        e.currentTarget.style.display =
+                          "none";
                       }}
                     />
 
                   </div>
                 )}
+              </div>
+
+              {/* =========================
+                  Dynamic Attributes
+              ========================= */}
+              <div className="border-t border-gray-100 pt-5">
+
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900">
+                      Product Options
+                    </h3>
+
+                    <p className="mt-1 text-sm text-gray-500">
+                      Add any options like Size, Color, Volume,
+                      Fragrance, Material, etc.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                  >
+                    <Plus size={17} />
+                    Add Option
+                  </button>
+
+                </div>
+
+                {/* Empty State */}
+                {formData.attributes.length === 0 && (
+                  <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center">
+
+                    <p className="text-sm font-medium text-gray-600">
+                      No product options added.
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      Click "Add Option" if this product has
+                      different sizes, colors, volumes, etc.
+                    </p>
+
+                  </div>
+                )}
+
+                {/* Options */}
+                <div className="space-y-4">
+
+                  {formData.attributes.map(
+                    (attribute, optionIndex) => (
+                      <div
+                        key={optionIndex}
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-4"
+                      >
+
+                        {/* Option Header */}
+                        <div className="mb-4 flex items-center justify-between gap-3">
+
+                          <div className="flex-1">
+
+                            <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                              Option Name
+                            </label>
+
+                            <input
+                              type="text"
+                              value={attribute.name}
+                              onChange={(e) =>
+                                handleOptionNameChange(
+                                  optionIndex,
+                                  e.target.value
+                                )
+                              }
+                              placeholder="e.g. Volume, Size, Color"
+                              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
+                            />
+
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeOption(optionIndex)
+                            }
+                            className="mt-6 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-red-50 hover:text-red-600"
+                            title="Remove option"
+                          >
+                            <Trash2 size={17} />
+                          </button>
+
+                        </div>
+
+                        {/* Values */}
+                        <div>
+
+                          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Values
+                          </label>
+
+                          <div className="space-y-2">
+
+                            {attribute.values.map(
+                              (value, valueIndex) => (
+                                <div
+                                  key={valueIndex}
+                                  className="flex items-center gap-2"
+                                >
+
+                                  <input
+                                    type="text"
+                                    value={value}
+                                    onChange={(e) =>
+                                      handleValueChange(
+                                        optionIndex,
+                                        valueIndex,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="e.g. 30ml"
+                                    className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
+                                  />
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      removeValue(
+                                        optionIndex,
+                                        valueIndex
+                                      )
+                                    }
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                                    title="Remove value"
+                                  >
+                                    <X size={18} />
+                                  </button>
+
+                                </div>
+                              )
+                            )}
+
+                          </div>
+
+                          {/* Add Value */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              addValue(optionIndex)
+                            }
+                            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-gray-700 transition hover:text-blue-600"
+                          >
+                            <Plus size={16} />
+                            Add Value
+                          </button>
+
+                        </div>
+
+                      </div>
+                    )
+                  )}
+
+                </div>
+
               </div>
 
               {/* Buttons */}

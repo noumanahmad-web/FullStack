@@ -3,7 +3,33 @@ import Product from "../models/Product.js";
 // Create Product
 export const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const {
+      name,
+      description,
+      price,
+      image,
+      category,
+      stock,
+      attributes,
+    } = req.body;
+
+    // Validate attributes
+    if (attributes && !Array.isArray(attributes)) {
+      return res.status(400).json({
+        success: false,
+        message: "Attributes must be an array",
+      });
+    }
+
+    const product = await Product.create({
+      name,
+      description,
+      price,
+      image,
+      category,
+      stock,
+      attributes: attributes || [],
+    });
 
     res.status(201).json({
       success: true,
@@ -11,7 +37,7 @@ export const createProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Create Product Error:", error);
 
     res.status(500).json({
       success: false,
@@ -31,7 +57,7 @@ export const getProducts = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Get Products Error:", error);
 
     res.status(500).json({
       success: false,
@@ -58,6 +84,8 @@ export const getProductById = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.error("Get Product Error:", error);
+
     res.status(500).json({
       success: false,
       message: "Failed to fetch product",
@@ -65,7 +93,6 @@ export const getProductById = async (req, res) => {
     });
   }
 };
-
 
 // Delete Product
 export const deleteProduct = async (req, res) => {
@@ -93,15 +120,38 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-
-
-
 // Update Product
 export const updateProduct = async (req, res) => {
   try {
+    const {
+      name,
+      description,
+      price,
+      image,
+      category,
+      stock,
+      attributes,
+    } = req.body;
+
+    // Validate attributes
+    if (attributes && !Array.isArray(attributes)) {
+      return res.status(400).json({
+        success: false,
+        message: "Attributes must be an array",
+      });
+    }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        name,
+        description,
+        price,
+        image,
+        category,
+        stock,
+        attributes: attributes || [],
+      },
       {
         new: true,
         runValidators: true,
@@ -121,6 +171,8 @@ export const updateProduct = async (req, res) => {
       product,
     });
   } catch (error) {
+    console.error("Update Product Error:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,

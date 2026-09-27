@@ -37,6 +37,24 @@ const productSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+
+    // Dynamic Product Options
+    attributes: [
+      {
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+
+        values: [
+          {
+            type: String,
+            trim: true,
+          },
+        ],
+      },
+    ],
   },
   {
     timestamps: true,
