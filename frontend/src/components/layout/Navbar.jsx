@@ -1,43 +1,17 @@
-import {
-  Search,
-  ShoppingCart,
-  Menu,
-  X,
-  LogOut,
-} from "lucide-react";
-
+import { Search, ShoppingBag, ShoppingCart, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-function Navbar({
-  onSignupClick,
-  searchTerm,
-  onSearchChange,
-  isLoggedIn,
-  onLogout,
-}) {
+function Navbar({ onSignupClick, searchTerm, onSearchChange }) {
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const { cartCount } = useCart();
   const navigate = useNavigate();
 
-  // =========================
-  // CLOSE MOBILE MENU
-  // =========================
-
   const closeMobileMenu = () => {
     setMobileMenu(false);
-  };
-
-  // =========================
-  // LOGOUT
-  // =========================
-
-  const handleLogoutClick = async () => {
-    closeMobileMenu();
-    await onLogout();
-  };
+  }; 
 
   // =========================
   // SEARCH
@@ -50,12 +24,10 @@ function Navbar({
 
     if (!value) {
       navigate("/shop");
-      closeMobileMenu();
       return;
     }
 
     navigate(`/shop?search=${encodeURIComponent(value)}`);
-
     closeMobileMenu();
   };
 
@@ -68,6 +40,7 @@ function Navbar({
 
     navigate(`/#${section}`);
 
+    // Small delay so React Router can move to Home first
     setTimeout(() => {
       const element = document.getElementById(section);
 
@@ -82,7 +55,6 @@ function Navbar({
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* =========================
@@ -91,14 +63,19 @@ function Navbar({
 
         <div className="h-20 flex items-center justify-between gap-4">
 
+          {/* LOGO */}
 
           <Link
             to="/"
             onClick={closeMobileMenu}
-            className="text-2xl font-bold tracking-tight text-gray-900 shrink-0"
+            className="inline-flex shrink-0 items-center gap-2 text-xl font-bold text-gray-900"
           >
-            SHOP<span className="text-blue-600">STORE</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
+              <ShoppingBag size={18} aria-hidden="true" />
+            </span>
+            <span>SHOP<span className="text-blue-600">STORE</span></span>
           </Link>
+
 
           {/* =========================
               DESKTOP NAVIGATION
@@ -106,6 +83,7 @@ function Navbar({
 
           <div className="hidden lg:flex items-center gap-7">
 
+            {/* HOME */}
 
             <Link
               to="/"
@@ -114,6 +92,8 @@ function Navbar({
               Home
             </Link>
 
+
+            {/* SHOP */}
 
             <Link
               to="/#shop"
@@ -127,6 +107,8 @@ function Navbar({
             </Link>
 
 
+            {/* CATEGORIES */}
+
             <button
               type="button"
               onClick={() => handleHomeSection("categories")}
@@ -135,6 +117,8 @@ function Navbar({
               Categories
             </button>
 
+
+            {/* NEW ARRIVALS */}
 
             <button
               type="button"
@@ -145,6 +129,8 @@ function Navbar({
             </button>
 
 
+            {/* MY ORDERS */}
+
             <Link
               to="/orders"
               className="text-sm font-medium text-gray-700 hover:text-blue-600 transition"
@@ -154,12 +140,15 @@ function Navbar({
 
           </div>
 
+
           {/* =========================
               RIGHT SIDE
           ========================= */}
 
           <div className="flex items-center gap-2 sm:gap-4">
 
+
+            {/* SEARCH */}
 
             <form
               onSubmit={handleSearch}
@@ -169,7 +158,7 @@ function Navbar({
 
                 <Search
                   size={19}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                 />
 
                 <input
@@ -186,59 +175,53 @@ function Navbar({
             </form>
 
 
+            {/* CART */}
+
             <Link
               to="/cart"
               className="relative p-2 text-gray-700 hover:text-blue-600 transition"
               aria-label="Shopping cart"
             >
+
               <ShoppingCart size={21} />
 
               <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
+
             </Link>
 
-            {/* =========================
-                DESKTOP AUTH
-            ========================= */}
 
-            {isLoggedIn ? (
+            {/* SIGNUP */}
 
-              <button
-                onClick={handleLogoutClick}
-                className="hidden sm:flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-red-600 transition"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
+            <button
+              onClick={onSignupClick}
+              className="hidden sm:block bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-blue-600 transition"
+            >
+              Signup
+            </button>
 
-            ) : (
 
-              <button
-                onClick={onSignupClick}
-                className="hidden sm:block bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-blue-600 transition"
-              >
-                Signup
-              </button>
-
-            )}
-
+            {/* MOBILE MENU BUTTON */}
 
             <button
               onClick={() => setMobileMenu(!mobileMenu)}
               className="lg:hidden p-2 text-gray-700"
               aria-label="Menu"
             >
+
               {mobileMenu ? (
                 <X size={24} />
               ) : (
                 <Menu size={24} />
               )}
+
             </button>
 
           </div>
 
         </div>
+
 
         {/* =========================
             MOBILE MENU
@@ -250,6 +233,8 @@ function Navbar({
             <div className="flex flex-col gap-4">
 
 
+              {/* HOME */}
+
               <Link
                 to="/"
                 onClick={closeMobileMenu}
@@ -259,11 +244,13 @@ function Navbar({
               </Link>
 
 
+              {/* SHOP */}
+
               <Link
                 to="/#shop"
                 onClick={(event) => {
                   event.preventDefault();
-                  handleHomeSection("shop");
+                  handleHomeSection("#shop");
                 }}
                 className="text-gray-700 font-medium hover:text-blue-600 transition"
               >
@@ -271,27 +258,29 @@ function Navbar({
               </Link>
 
 
+              {/* CATEGORIES */}
+
               <button
                 type="button"
-                onClick={() =>
-                  handleHomeSection("categories")
-                }
+                onClick={() => handleHomeSection("categories")}
                 className="text-left text-gray-700 font-medium hover:text-blue-600 transition"
               >
                 Categories
               </button>
 
 
+              {/* NEW ARRIVALS */}
+
               <button
                 type="button"
-                onClick={() =>
-                  handleHomeSection("new-arrivals")
-                }
+                onClick={() => handleHomeSection("new-arrivals")}
                 className="text-left text-gray-700 font-medium hover:text-blue-600 transition"
               >
                 New Arrivals
               </button>
 
+
+              {/* MY ORDERS */}
 
               <Link
                 to="/orders"
@@ -302,15 +291,18 @@ function Navbar({
               </Link>
 
 
+              {/* MOBILE SEARCH */}
+
               <form
                 onSubmit={handleSearch}
                 className="pt-2"
               >
+
                 <div className="relative">
 
                   <Search
                     size={19}
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                   />
 
                   <input
@@ -320,19 +312,13 @@ function Navbar({
                       onSearchChange(e.target.value)
                     }
                     placeholder="Search products..."
-                    className="w-full bg-gray-100 rounded-full py-3 pl-11 pr-12 outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 rounded-full py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-blue-500"
                   />
 
-                  <button
-                    type="submit"
-                    aria-label="Search products"
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-blue-600 transition"
-                  >
-                    <Search size={18} />
-                  </button>
-
                 </div>
+
               </form>
+
 
               {/* MOBILE CART */}
 
@@ -344,21 +330,10 @@ function Navbar({
                 Shopping Cart ({cartCount})
               </Link>
 
-              {/* =========================
-                  MOBILE AUTH
-              ========================= */}
 
-              {isLoggedIn ? (
+              {/* MOBILE SIGNUP */}
 
-                <button
-                  onClick={handleLogoutClick}
-                  className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-full font-medium hover:bg-red-600 transition"
-                >
-                  <LogOut size={18} />
-                  Logout
-                </button>
-
-              ) : (
+              <div className="pt-3 border-t border-gray-100">
 
                 <button
                   onClick={() => {
@@ -370,7 +345,7 @@ function Navbar({
                   Signup
                 </button>
 
-              )}
+              </div>
 
             </div>
 

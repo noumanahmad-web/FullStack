@@ -1,9 +1,9 @@
 const HeroSection = () => {
   return (
     <section className="relative w-full overflow-hidden bg-[#f7f7f7]">
-      <div className="mx-auto flex min-h-screen max-w-[1400px] items-center px-6 md:px-12 lg:px-20">
+      <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col items-center justify-center px-6 py-12 md:flex-row md:justify-start md:px-12 md:py-0 lg:px-20">
 
-        <div className="relative  w-full md:w-[52%]">
+        <div className="relative w-full md:w-[52%]">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-sm">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f5c85b] text-[10px]">
               %
@@ -40,11 +40,11 @@ const HeroSection = () => {
           
         </div>
 
-        <div className="mt-8 md:hidden">
+        <div className="mt-8 w-full md:hidden">
           <img
             src="/src/assets/hero.png"
             alt="Fashion Model"
-            className="mx-auto max-h-[420px] object-contain"
+            className="mx-auto max-h-80 max-w-full object-contain"
           />
         </div>
       </div>

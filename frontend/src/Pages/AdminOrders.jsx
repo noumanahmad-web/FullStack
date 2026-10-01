@@ -7,7 +7,11 @@ import {
   XCircle,
   RefreshCw,
   Search,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -17,6 +21,7 @@ function AdminOrders() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchOrders = async () => {
     try {
@@ -116,6 +121,10 @@ function AdminOrders() {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   // Stats
   const totalOrders = orders.length;
 
@@ -158,6 +167,17 @@ function AdminOrders() {
 
     return matchesSearch && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / PAGE_SIZE);
+  const page = Math.min(currentPage, totalPages || 1);
+  const pageOrders = filteredOrders.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+  const firstVisibleOrder = filteredOrders.length
+    ? (page - 1) * PAGE_SIZE + 1
+    : 0;
+  const lastVisibleOrder = Math.min(page * PAGE_SIZE, filteredOrders.length);
 
   // Format date
   const formatDate = (date) => {
@@ -374,15 +394,11 @@ function AdminOrders() {
 
             {/* Result Count */}
             <div className="mt-4 text-sm text-gray-500">
-              Showing{" "}
+              Showing {firstVisibleOrder}-{lastVisibleOrder} of{" "}
               <span className="font-semibold text-gray-900">
                 {filteredOrders.length}
               </span>{" "}
-              of{" "}
-              <span className="font-semibold text-gray-900">
-                {orders.length}
-              </span>{" "}
-              orders
+              matching orders ({orders.length} total)
             </div>
           </div>
 
@@ -472,7 +488,7 @@ function AdminOrders() {
       </td>
     </tr>
   ) : (
-    filteredOrders.map((order) => (
+    pageOrders.map((order) => (
       <tr
         key={order._id}
         className="hover:bg-gray-50 transition"
@@ -550,6 +566,36 @@ function AdminOrders() {
   )}
 </tbody>
               </table>
+
+              {filteredOrders.length > PAGE_SIZE && (
+                <div className="flex flex-col gap-3 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-gray-500" aria-live="polite">
+                    Showing {firstVisibleOrder}-{lastVisibleOrder} of {filteredOrders.length} orders
+                  </p>
+                  <div className="flex items-center justify-between gap-3 sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page - 1)}
+                      disabled={page === 1}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronLeft size={16} /> Previous
+                    </button>
+                    <span className="text-sm text-gray-600" aria-live="polite">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page + 1)}
+                      disabled={page === totalPages}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* ================= ORDER DETAILS MODAL ================= */}
 
               {selectedOrder && (

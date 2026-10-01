@@ -8,8 +8,7 @@ import {
   ArrowUpRight,
   Plus,
   Eye,
-  Settings,
-  LogOut,
+  RefreshCw,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -229,127 +228,14 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb] flex">
-
-      {/* ================= SIDEBAR ================= */}
-
-      <aside className="hidden lg:flex w-64 bg-gray-950 text-white flex-col fixed left-0 top-0 bottom-0">
-
-        {/* Logo */}
-
-        <div className="h-20 flex items-center px-6 border-b border-white/10">
-
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-            <span className="text-gray-950 font-black text-lg">
-              A
-            </span>
-          </div>
-
-          <div className="ml-3">
-            <h1 className="font-bold text-lg">
-              AdminPanel
-            </h1>
-
-            <p className="text-xs text-gray-400">
-              Store Management
-            </p>
-          </div>
-
-        </div>
-
-        {/* Navigation */}
-
-        <nav className="flex-1 px-4 py-6 space-y-2">
-
-          <Link
-            to="/admin"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white text-gray-950 font-medium"
-          >
-            <TrendingUp size={19} />
-            Dashboard
-          </Link>
-
-          <Link
-            to="/admin/orders"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition"
-          >
-            <ShoppingCart size={19} />
-            Orders
-          </Link>
-
-          <Link
-            to="/admin/products"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition"
-          >
-            <Package size={19} />
-            Products
-          </Link>
-
-          <Link
-            to="/admin/users"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition"
-          >
-            <Users size={19} />
-            Customers
-          </Link>
-
-          <div className="pt-6">
-
-            <p className="px-4 mb-2 text-xs uppercase tracking-wider text-gray-500">
-              Management
-            </p>
-
-            <Link
-              to="/admin/settings"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition"
-            >
-              <Settings size={19} />
-              Settings
-            </Link>
-
-          </div>
-
-        </nav>
-
-        {/* Admin Profile */}
-
-        <div className="p-4 border-t border-white/10">
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
-
-            <div className="w-10 h-10 rounded-full bg-white text-gray-950 flex items-center justify-center font-bold">
-              A
-            </div>
-
-            <div className="flex-1 min-w-0">
-
-              <p className="font-medium truncate">
-                Admin
-              </p>
-
-              <p className="text-xs text-gray-400 truncate">
-                Admin Panel
-              </p>
-
-            </div>
-
-            <button className="text-gray-400 hover:text-white">
-              <LogOut size={18} />
-            </button>
-
-          </div>
-
-        </div>
-
-      </aside>
-
+    <div className="min-h-screen min-w-0 bg-[#f6f7fb]">
       {/* ================= MAIN ================= */}
 
-      <main className="flex-1 ">
+      <main className="min-w-0">
 
         {/* Top Header */}
 
-        <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-5 sm:px-8">
+        <header className="flex min-h-20 items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 sm:px-8">
 
           <div>
 
@@ -363,24 +249,27 @@ function AdminDashboard() {
 
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
 
             <button
               onClick={fetchDashboardData}
-              className="hidden sm:block px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition"
+              aria-label="Refresh dashboard"
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 p-2.5 text-sm font-medium transition hover:bg-gray-50 sm:px-4"
             >
-              Refresh
+              <RefreshCw size={17} />
+              <span className="hidden sm:inline">Refresh</span>
             </button>
 
             <Link
               to="/admin/products"
-              className="hidden sm:flex items-center gap-2 bg-gray-950 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+              aria-label="Add product"
+              className="inline-flex items-center gap-2 rounded-xl bg-gray-950 p-2.5 text-sm font-medium text-white transition hover:bg-gray-800 sm:px-4"
             >
               <Plus size={17} />
-              Add Product
+              <span className="hidden sm:inline">Add Product</span>
             </Link>
 
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-700">
+            <div className="hidden h-10 w-10 items-center justify-center rounded-full bg-gray-100 font-bold text-gray-700 sm:flex">
               A
             </div>
 
@@ -416,7 +305,7 @@ function AdminDashboard() {
                     Total Orders
                   </p>
 
-                  <h3 className="text-3xl font-bold text-gray-900 mt-2">
+                  <h3 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl">
                     {stats.orders}
                   </h3>
 
@@ -456,7 +345,7 @@ function AdminDashboard() {
                     Total Products
                   </p>
 
-                  <h3 className="text-3xl font-bold text-gray-900 mt-2">
+                  <h3 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl">
                     {stats.products}
                   </h3>
 
@@ -492,7 +381,7 @@ function AdminDashboard() {
                     Customers
                   </p>
 
-                  <h3 className="text-3xl font-bold text-gray-900 mt-2">
+                  <h3 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl">
                     {stats.users}
                   </h3>
 
@@ -532,7 +421,7 @@ function AdminDashboard() {
                     Total Revenue
                   </p>
 
-                  <h3 className="text-3xl font-bold mt-2">
+                  <h3 className="mt-2 wrap-break-word text-2xl font-bold sm:text-3xl">
                     {formatCurrency(stats.revenue)}
                   </h3>
 
@@ -672,7 +561,7 @@ function AdminDashboard() {
 
           <div className="mt-8 bg-white border border-gray-200 rounded-2xl overflow-hidden">
 
-            <div className="p-5 sm:p-6 flex items-center justify-between border-b border-gray-200">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-4 sm:p-6">
 
               <div>
 
@@ -696,7 +585,52 @@ function AdminDashboard() {
 
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="space-y-3 p-4 md:hidden">
+              {recentOrders.length === 0 ? (
+                <p className="py-6 text-center text-sm text-gray-500">No orders found.</p>
+              ) : (
+                recentOrders.map((order) => (
+                  <article key={order._id} className="rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-gray-500">
+                          Order #{String(order._id).slice(-8)}
+                        </p>
+                        <p className="mt-1 wrap-break-word font-semibold text-gray-900">
+                          {order.user?.name || order.customer?.name || "Customer"}
+                        </p>
+                        <p className="wrap-break-word text-xs text-gray-500">
+                          {order.user?.email || order.customer?.email || "No email"}
+                        </p>
+                      </div>
+                      <Link
+                        to="/admin/orders"
+                        aria-label={`View order ${String(order._id).slice(-8)}`}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 transition hover:bg-gray-900 hover:text-white"
+                      >
+                        <Eye size={17} />
+                      </Link>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-3 border-t border-gray-100 pt-3">
+                      <div>
+                        <p className="text-xs text-gray-500">Total</p>
+                        <p className="font-semibold text-gray-900">{formatCurrency(order.total)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500">Placed</p>
+                        <p className="text-sm text-gray-700">{formatDate(order.createdAt)}</p>
+                      </div>
+                      <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(order.status)}`}>
+                        {order.status || "Pending"}
+                      </span>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
 
               <table className="w-full min-w-[700px]">
 

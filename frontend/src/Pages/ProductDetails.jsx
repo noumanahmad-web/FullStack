@@ -148,7 +148,7 @@ function ProductDetails() {
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-[500px] md:h-[600px] object-cover group-hover:scale-105 transition duration-700"
+                className="w-full h-80 sm:h-105 md:h-150 object-cover group-hover:scale-105 transition duration-700"
               />
             </div>
           </div>

@@ -5,14 +5,19 @@ import {
   Search,
   Eye,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+const PAGE_SIZE = 10;
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // ================= FETCH USERS =================
 
@@ -61,6 +66,21 @@ function AdminUsers() {
       user.email?.toLowerCase().includes(value)
     );
   });
+
+  const totalPages = Math.ceil(filteredUsers.length / PAGE_SIZE);
+  const page = Math.min(currentPage, totalPages || 1);
+  const pageUsers = filteredUsers.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
+  const firstVisibleUser = filteredUsers.length
+    ? (page - 1) * PAGE_SIZE + 1
+    : 0;
+  const lastVisibleUser = Math.min(page * PAGE_SIZE, filteredUsers.length);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
 
   // ================= STATS =================
 
@@ -401,7 +421,7 @@ function AdminUsers() {
 
                 <tbody className="divide-y divide-gray-100">
 
-                  {filteredUsers.map((user) => (
+                  {pageUsers.map((user) => (
 
                     <tr
                       key={user._id}
@@ -505,6 +525,35 @@ function AdminUsers() {
                 </tbody>
 
               </table>
+
+              {filteredUsers.length > PAGE_SIZE && (
+                <div className="flex flex-col gap-3 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-gray-500" aria-live="polite">
+                    Showing {firstVisibleUser}-{lastVisibleUser} of {filteredUsers.length} users
+                  </p>
+                  <div className="flex items-center justify-between gap-3 sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page - 1)}
+                      disabled={page === 1}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronLeft size={16} /> Previous
+                    </button>
+                    <span className="text-sm text-gray-600" aria-live="polite">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page + 1)}
+                      disabled={page === totalPages}
+                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
 
             </div>
 

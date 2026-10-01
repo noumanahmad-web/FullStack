@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   NavLink,
   Outlet,
@@ -12,10 +13,13 @@ import {
   LogOut,
   Settings,
   Store,
+  Menu,
+  X,
 } from "lucide-react";
 
 function AdminLayout() {
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // =========================
   // ADMIN INFORMATION
@@ -62,7 +66,10 @@ function AdminLayout() {
 
       {/* ================= SIDEBAR ================= */}
 
-      <aside className="hidden lg:flex w-64 bg-gray-950 text-white flex-col fixed left-0 top-0 bottom-0">
+      <aside
+        id="admin-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-gray-950 text-white transition-transform duration-300 lg:z-40 lg:w-64 lg:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
 
         {/* ================= LOGO ================= */}
 
@@ -87,11 +94,24 @@ function AdminLayout() {
 
           </div>
 
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(false)}
+            className="ml-auto rounded-lg p-2 text-gray-300 hover:bg-white/10 hover:text-white lg:hidden"
+            aria-label="Close admin menu"
+          >
+            <X size={20} />
+          </button>
+
         </div>
 
         {/* ================= NAVIGATION ================= */}
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav
+          className="flex-1 px-4 py-6 space-y-2"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-label="Admin navigation"
+        >
 
           {/* Dashboard */}
 
@@ -201,9 +221,32 @@ function AdminLayout() {
 
       </aside>
 
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-label="Close admin menu"
+        />
+      )}
+
       {/* ================= MAIN CONTENT ================= */}
 
-      <main className="ml-64 flex-1 min-h-screen">
+      <main className="min-h-screen min-w-0 flex-1 lg:ml-64">
+
+        <header className="sticky top-0 z-30 flex h-14 items-center border-b border-gray-200 bg-white px-4 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="-ml-2 rounded-lg p-2 text-gray-700 hover:bg-gray-100"
+            aria-label="Open admin menu"
+            aria-controls="admin-sidebar"
+            aria-expanded={mobileMenuOpen}
+          >
+            <Menu size={22} />
+          </button>
+          <span className="ml-2 font-semibold text-gray-900">AdminPanel</span>
+        </header>
 
         <Outlet />
 
