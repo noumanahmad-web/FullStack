@@ -570,7 +570,7 @@ function AdminOrders() {
               {filteredOrders.length > PAGE_SIZE && (
                 <div className="flex flex-col gap-3 border-t border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-gray-500" aria-live="polite">
-                    Showing {firstVisibleOrder}-{lastVisibleOrder} of {filteredOrders.length} orders
+                    Showing {firstVisibleOrder}-{lastVisibleOrder} of {totalOrders} orders
                   </p>
                   <div className="flex items-center justify-between gap-3 sm:justify-end">
                     <button

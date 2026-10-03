@@ -116,14 +116,38 @@ const getOrderById = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .populate("user", "name email")
-      .populate("items.product", "name image")
-      .sort({ createdAt: -1 });
+    // Pagination
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.max(Number(req.query.limit) || 10, 1);
+
+    const skip = (page - 1) * limit;
+
+    // Get orders + total count
+    const [orders, totalOrders] = await Promise.all([
+      Order.find()
+        .populate("user", "name email")
+        .populate("items.product", "name image")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Order.countDocuments(),
+    ]);
+
+    const totalPages = Math.ceil(totalOrders / limit);
 
     res.status(200).json({
       success: true,
       orders,
+
+      pagination: {
+        currentPage: page,
+        limit,
+        totalOrders,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
     });
   } catch (error) {
     console.error("Admin Get Orders Error:", error);
